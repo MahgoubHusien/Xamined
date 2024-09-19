@@ -1,25 +1,43 @@
 import React from "react";
 import { DotBackgroundDemo } from "@/components/ui/dot-background";
 import { FlipWords } from "@/components/ui/flip-words";
-import { MarqueeDemo } from "@/components/magicui/marquee-demo";
+import { TweetDemo } from "@/components/magicui/marquee-demo";
 
 export default function LandingPage() {
-  const words = ["Explore Sentiment", "Analyze Twitter", "Gain Insights"];
+  const words = [
+    "Sentiment",
+    "Trends",
+    "Insights",
+    "Opinion",
+    "Buzz",
+    "Decisions",
+  ];
 
   return (
-    <div className="relative min-h-screen flex flex-col justify-center items-center bg-gray-900 text-white">
+    <div className="relative min-h-screen flex flex-col justify-center items-center bg-gray-900 text-white overflow-hidden">
       {/* Background Animation */}
       <DotBackgroundDemo />
 
-      {/* Text Generation */}
-      <div className="z-10 text-center mb-10">
-        <h1 className="text-5xl font-bold">Real-Time Sentiment Analysis</h1>
-        <FlipWords words={words} className="text-3xl mt-4" />
+      {/* Static Phrase and Flip Words */}
+      <div className="absolute top-20 left-10 z-50 m-4">
+        <div className="text-6xl text-left text-black">
+          Xamine
+          <FlipWords words={words} duration={3000} className="text-left text-6xl font-extrabold text-black" />
+          <br></br>From Tweets In <br></br>
+          Real-Time!
+        </div>
+
+        {/* Mini About Section */}
+        <div className="mt-6 text-xl text-left text-neutral-500 max-w-sm">
+          Dive into real-time analysis of the latest trends and opinions. Explore how public sentiment shapes the world, and let us guide you through 
+          the data that matters. Whether you're a researcher, marketer, or curious 
+          mind, our insights will give you a fresh perspective.
+        </div>
       </div>
 
       {/* Scrolling Tweets */}
-      <div className="absolute bottom-0 w-full">
-        <MarqueeDemo />
+      <div className="absolute bottom-10 w-full m-4">
+        <TweetDemo />
       </div>
     </div>
   );
