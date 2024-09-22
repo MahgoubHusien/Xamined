@@ -2,6 +2,7 @@ import React from "react";
 import { DotBackgroundDemo } from "@/components/ui/dot-background";
 import { FlipWords } from "@/components/ui/flip-words";
 import { TweetDemo } from "@/components/magicui/marquee-demo";
+import { Tweet } from "@/components/tweet-client";
 
 export default function LandingPage() {
   const words = [
@@ -15,10 +16,8 @@ export default function LandingPage() {
 
   return (
     <div className="relative min-h-screen flex flex-col justify-center items-center bg-gray-900 text-white overflow-hidden">
-      {/* Background Animation */}
       <DotBackgroundDemo />
 
-      {/* Static Phrase and Flip Words */}
       <div className="absolute top-20 left-10 z-50 m-4">
         <div className="text-6xl text-left text-black">
           Xamine
@@ -27,7 +26,6 @@ export default function LandingPage() {
           Real-Time!
         </div>
 
-        {/* Mini About Section */}
         <div className="mt-6 text-xl text-left text-neutral-500 max-w-sm">
           Dive into real-time analysis of the latest trends and opinions. Explore how public sentiment shapes the world, and let us guide you through 
           the data that matters. Whether you're a researcher, marketer, or curious 
@@ -35,7 +33,7 @@ export default function LandingPage() {
         </div>
       </div>
 
-      {/* Scrolling Tweets */}
+=
       <div className="absolute bottom-10 w-full m-4">
         <TweetDemo />
       </div>
