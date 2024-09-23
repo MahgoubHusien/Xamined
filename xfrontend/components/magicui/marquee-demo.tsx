@@ -11,7 +11,7 @@ const TweetCard = ({ id }: { id: string }) => (
 );
 
 export const TweetDemo = () => (
-  <div className="relative flex h-screen w-full overflow-auto p-4">
+  <div className="relative flex w-[500px]">
     {/* Container for the tweet */}
     <TweetCard id={tweetId} />
   </div>

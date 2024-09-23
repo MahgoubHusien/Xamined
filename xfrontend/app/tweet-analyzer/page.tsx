@@ -1,15 +1,14 @@
 "use client";
 import React from "react";
+import { Layout } from "@/components/Layout";
 import { FeaturesSectionDemo } from "@/components/bento-grid";
-import { DotBackgroundDemo } from "@/components/ui/dot-background";
 
 export default function FeaturesPage() {
   return (
-    <div className="relative min-h-screen flex flex-col justify-center items-center bg-gray-900 text-white overflow-hidden">
-      <DotBackgroundDemo />
-      <div className="relative z-10 w-full max-w-7xl px-4">
+    <Layout>
+      <div className="min-h-screen">
         <FeaturesSectionDemo />
       </div>
-    </div>
+    </Layout>
   );
 }
