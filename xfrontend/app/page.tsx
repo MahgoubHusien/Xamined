@@ -6,14 +6,10 @@ import { TweetDemo } from "@/components/magicui/marquee-demo";
 import { RatingWithReasoning } from "@/components/RatingWithReasoning";
 
 export default function LandingPage() {
-  const words = [
-    "Emotions",
-    "Insights",
-    "Opinions",
-  ];
+  const words = ["Emotions", "Insights", "Opinions"];
 
   const tweetContent = "Apple has announced you can now add California driver's licenses and state IDs to Apple Wallet!";
-  const score = 75; 
+  const scores = { positive: 47.7, neutral: 22.87, negative: 29.43 };
   const reasoning = "The tweet expresses positive sentiment about the new feature and shows excitement from users.";
 
   return (
@@ -40,13 +36,13 @@ export default function LandingPage() {
         <div className="flex flex-col md:flex-row w-full max-w-5xl items-center justify-center gap-2" style={{ transform: 'translateX(55px)' }}>
           <div className="w-full md:w-1/2 flex justify-end relative" style={{ top: '-260px', paddingRight: 0, marginRight: -8 }}>
             <div className="scale-90 md:scale-100">
-              <TweetDemo />
+              <TweetDemo tweetUrl={"1836824626971955537"}/>
             </div>
           </div>
-          <div className="w-full md:w-1/2 flex justify-start relative" style={{ transform: 'translateY(20px)', paddingLeft: 0, marginLeft: -16 }}>
+          <div className="w-full md:w-1/2 flex justify-start relative" style={{ transform: 'translateY(17px)', paddingLeft: 0, marginLeft: -16 }}>
             <RatingWithReasoning
               tweetContent={tweetContent}
-              score={score}
+              scores={scores}
               reasoning={reasoning}
             />
           </div>
