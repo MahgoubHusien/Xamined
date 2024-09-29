@@ -3,3 +3,6 @@ sentiment-analysis/.env
 # Ignore environment variable files
 .env
 *.env
+
+# Ignore history directory
+.history/
