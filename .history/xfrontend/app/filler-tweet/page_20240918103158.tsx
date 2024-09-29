@@ -1,0 +1,23 @@
+import React from 'react';
+import ClientTweetCard from '@/components/magicui/client-tweet-card';  // For client-side rendering
+import { TweetCard } from '@/components/magicui/tweet-card';  // For server-side rendering
+
+export default function TweetDisplay() {
+  return (
+    <div className="container mx-auto p-4">
+      <h1 className="text-2xl font-bold mb-4">Tweet Cards</h1>
+
+      {/* Server-side rendered tweet card */}
+      <div className="mb-8">
+        <h2 className="text-xl font-semibold">Server-Side Rendered Tweet</h2>
+        <TweetCard id="1441032681968212480" className="shadow-lg" />
+      </div>
+
+      {/* Client-side rendered tweet card */}
+      <div>
+        <h2 className="text-xl font-semibold">Client-Side Rendered Tweet</h2>
+        <ClientTweetCard id="1441032681968212480" className="shadow-lg" />
+      </div>
+    </div>
+  );
+}
