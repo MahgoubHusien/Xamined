@@ -1,5 +1,0 @@
-xfrontend/.env
-sentiment-analysis/.env
-# Ignore environment variable files
-.env
-*.env

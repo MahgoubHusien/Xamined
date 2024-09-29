@@ -1,5 +1,0 @@
-import { TweetCard } from "@/components/magicui/tweet-card";
- 
-export default async function App() {
-  return <TweetCard id="1441032681968212480" />;
-}
