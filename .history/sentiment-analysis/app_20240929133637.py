@@ -1,5 +1,4 @@
 from flask import Flask, request, jsonify
-from flask_cors import CORS
 from transformers import AutoModelForSequenceClassification, AutoTokenizer, AutoConfig
 import openai
 import numpy as np
@@ -10,17 +9,15 @@ from dotenv import load_dotenv
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app)  
 
-OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
-OPENAI_MODEL = os.getenv('OPENAI_MODEL')
-MODEL_NAME = os.getenv('MODEL_NAME')
+MODEL = "cardiffnlp/twitter-roberta-base-sentiment-latest"
 
-openai.api_key = OPENAI_API_KEY
+tokenizer = AutoTokenizer.from_pretrained(MODEL)
+config = AutoConfig.from_pretrained(MODEL)
+model = AutoModelForSequenceClassification.from_pretrained(MODEL)
 
-tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
-config = AutoConfig.from_pretrained(MODEL_NAME)
-model = AutoModelForSequenceClassification.from_pretrained(MODEL_NAME)
+openai.api_key = os.getenv('OPENAI_API_KEY')
+m
 
 from openai.error import OpenAIError
 
@@ -41,7 +38,7 @@ def analyze_sentiment(text):
     scores = output.logits[0].detach().numpy()
     scores = softmax(scores)
     ranking = np.argsort(scores)[::-1]
-
+    
     results = []
     for i in range(scores.shape[0]):
         label = config.id2label[ranking[i]]
@@ -57,13 +54,14 @@ def analyze_sentiment(text):
 def chat_with_openai(prompt):
     try:
         response = openai.ChatCompletion.create(
-            model=OPENAI_MODEL,
+            model="gpt-3.5-turbo", 
             messages=[
                 {"role": "system", "content": "You are a helpful assistant."},
                 {"role": "user", "content": prompt}
             ],
             temperature=0.7
         )
+        # Access the assistant's reply
         assistant_response = response['choices'][0]['message']['content'].strip()
         return assistant_response
     except OpenAIError as e:
@@ -79,7 +77,7 @@ def analyze():
     data = request.get_json()
     if not data or 'text' not in data:
         return jsonify({'error': 'No text provided'}), 400
-
+    
     text = data['text']
     results = analyze_sentiment(text)
     return jsonify(results), 200
@@ -90,7 +88,7 @@ def chat():
     data = request.get_json()
     if not data or 'prompt' not in data:
         return jsonify({'error': 'No prompt provided'}), 400
-
+    
     prompt = data['prompt']
     response_text = chat_with_openai(prompt)
     return jsonify({'response': response_text}), 200

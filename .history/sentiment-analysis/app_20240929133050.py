@@ -1,5 +1,4 @@
 from flask import Flask, request, jsonify
-from flask_cors import CORS
 from transformers import AutoModelForSequenceClassification, AutoTokenizer, AutoConfig
 import openai
 import numpy as np
@@ -7,22 +6,22 @@ from scipy.special import softmax
 import os
 from dotenv import load_dotenv
 
+# Load environment variables from .env file
 load_dotenv()
 
+# Initialize Flask app
 app = Flask(__name__)
-CORS(app)  
 
-OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
-OPENAI_MODEL = os.getenv('OPENAI_MODEL')
-MODEL_NAME = os.getenv('MODEL_NAME')
+# Model and Tokenizer Paths for Sentiment Analysis
+MODEL = "cardiffnlp/twitter-roberta-base-sentiment-latest"
 
-openai.api_key = OPENAI_API_KEY
+# Load the model and tokenizer for sentiment analysis
+tokenizer = AutoTokenizer.from_pretrained(MODEL)
+config = AutoConfig.from_pretrained(MODEL)
+model = AutoModelForSequenceClassification.from_pretrained(MODEL)
 
-tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
-config = AutoConfig.from_pretrained(MODEL_NAME)
-model = AutoModelForSequenceClassification.from_pretrained(MODEL_NAME)
-
-from openai.error import OpenAIError
+# Set up OpenAI API key from environment variable
+openai.api_key = os.getenv('OPENAI_API_KEY')
 
 # Preprocessing function to replace usernames and links
 def preprocess(text):
@@ -38,7 +37,7 @@ def analyze_sentiment(text):
     text = preprocess(text)
     encoded_input = tokenizer(text, return_tensors='pt')
     output = model(**encoded_input)
-    scores = output.logits[0].detach().numpy()
+    scores = output.logits[0].detach().numpy()  # Use output.logits for newer versions
     scores = softmax(scores)
     ranking = np.argsort(scores)[::-1]
 
@@ -56,17 +55,18 @@ def analyze_sentiment(text):
 # Chat Function using OpenAI's ChatGPT
 def chat_with_openai(prompt):
     try:
-        response = openai.ChatCompletion.create(
-            model=OPENAI_MODEL,
+        response = openai.chat_completion_create(
+            model="gpt-3.5-turbo",  # or 'gpt-4' if you have access
             messages=[
                 {"role": "system", "content": "You are a helpful assistant."},
                 {"role": "user", "content": prompt}
             ],
             temperature=0.7
         )
+        # Access the assistant's reply
         assistant_response = response['choices'][0]['message']['content'].strip()
         return assistant_response
-    except OpenAIError as e:
+    except openai.OpenAIError as e:
         # Handle OpenAI API errors
         return f"An error occurred: {str(e)}"
     except Exception as e:
@@ -78,7 +78,7 @@ def chat_with_openai(prompt):
 def analyze():
     data = request.get_json()
     if not data or 'text' not in data:
-        return jsonify({'error': 'No text provided'}), 400
+        return jsonify({'error': 'No text provided'}), 400 
 
     text = data['text']
     results = analyze_sentiment(text)
@@ -95,5 +95,6 @@ def chat():
     response_text = chat_with_openai(prompt)
     return jsonify({'response': response_text}), 200
 
+# Run the Flask app
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=5000, debug=True)

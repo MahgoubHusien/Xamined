@@ -16,6 +16,7 @@ OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 OPENAI_MODEL = os.getenv('OPENAI_MODEL')
 MODEL_NAME = os.getenv('MODEL_NAME')
 
+# Set up OpenAI API key
 openai.api_key = OPENAI_API_KEY
 
 tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)

@@ -7,6 +7,7 @@ from scipy.special import softmax
 import os
 from dotenv import load_dotenv
 
+# Load environment variables from .env file
 load_dotenv()
 
 app = Flask(__name__)
@@ -16,8 +17,10 @@ OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 OPENAI_MODEL = os.getenv('OPENAI_MODEL')
 MODEL_NAME = os.getenv('MODEL_NAME')
 
+# Set up OpenAI API key
 openai.api_key = OPENAI_API_KEY
 
+# Initialize sentiment analysis model
 tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
 config = AutoConfig.from_pretrained(MODEL_NAME)
 model = AutoModelForSequenceClassification.from_pretrained(MODEL_NAME)

@@ -1,28 +1,27 @@
 from flask import Flask, request, jsonify
-from flask_cors import CORS
-from transformers import AutoModelForSequenceClassification, AutoTokenizer, AutoConfig
 import openai
-import numpy as np
-from scipy.special import softmax
 import os
 from dotenv import load_dotenv
+from transformers import AutoModelForSequenceClassification, AutoTokenizer, AutoConfig
+import numpy as np
+from scipy.special import softmax
 
+# Load environment variables from .env file
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app)  
 
-OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
-OPENAI_MODEL = os.getenv('OPENAI_MODEL')
-MODEL_NAME = os.getenv('MODEL_NAME')
+# Load the OpenAI API key and other configurations from environment variables
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
-openai.api_key = OPENAI_API_KEY
+# Use a valid OpenAI model, defaulting to "gpt-3.5-turbo" if not set
+openai_model = os.getenv("OPENAI_MODEL", "gpt-3.5-turbo")
 
-tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
-config = AutoConfig.from_pretrained(MODEL_NAME)
-model = AutoModelForSequenceClassification.from_pretrained(MODEL_NAME)
-
-from openai.error import OpenAIError
+# Set the model for sentiment analysis
+MODEL = "cardiffnlp/twitter-roberta-base-sentiment-latest"
+tokenizer = AutoTokenizer.from_pretrained(MODEL)
+config = AutoConfig.from_pretrained(MODEL)
+model = AutoModelForSequenceClassification.from_pretrained(MODEL)
 
 # Preprocessing function to replace usernames and links
 def preprocess(text):
@@ -53,25 +52,21 @@ def analyze_sentiment(text):
         })
     return results
 
-# Chat Function using OpenAI's ChatGPT
-def chat_with_openai(prompt):
+# ChatGPT integration using the loaded environment variables
+def ask_chatgpt(prompt):
     try:
         response = openai.ChatCompletion.create(
-            model=OPENAI_MODEL,
+            model=openai_model,
             messages=[
                 {"role": "system", "content": "You are a helpful assistant."},
                 {"role": "user", "content": prompt}
             ],
             temperature=0.7
         )
-        assistant_response = response['choices'][0]['message']['content'].strip()
-        return assistant_response
-    except OpenAIError as e:
-        # Handle OpenAI API errors
-        return f"An error occurred: {str(e)}"
+        # Access response using attribute access
+        return response.choices[0].message.content.strip()
     except Exception as e:
-        # Handle other exceptions
-        return f"An unexpected error occurred: {str(e)}"
+        return str(e)
 
 # API Endpoint for Sentiment Analysis
 @app.route('/analyze', methods=['POST'])
@@ -85,15 +80,16 @@ def analyze():
     return jsonify(results), 200
 
 # API Endpoint for ChatGPT Interaction
-@app.route('/chat', methods=['POST'])
-def chat():
+@app.route('/chatgpt', methods=['POST'])
+def chatgpt():
     data = request.get_json()
     if not data or 'prompt' not in data:
         return jsonify({'error': 'No prompt provided'}), 400
 
     prompt = data['prompt']
-    response_text = chat_with_openai(prompt)
-    return jsonify({'response': response_text}), 200
+    chatgpt_response = ask_chatgpt(prompt)
+    return jsonify({"response": chatgpt_response}), 200
 
 if __name__ == '__main__':
-    app.run(host='127.0.0.1', port=5000, debug=True)
+    # Run the app on 0.0.0.0 to make it accessible from outside
+    app.run(host='0.0.0.0', port=5000, debug=True)
