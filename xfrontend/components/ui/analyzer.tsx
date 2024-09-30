@@ -1,8 +1,8 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { RatingWithReasoning } from "@/components/ui/RatingWithReasoning";
 import { TweetDemo } from "@/components/ui/tweet";
-import Chatbot from "@/components/ui/Chatbot";
+import Chatbot from "@/components/ui/chatbot";
 
 const FeaturesPage = () => {
   const [tweetContent, setTweetContent] = useState("");
@@ -14,18 +14,38 @@ const FeaturesPage = () => {
   });
   const [reasoning, setReasoning] = useState("");
 
+  const fetchTweetContent = async (url: string) => {
+    const tweetId = url.split("/").pop(); // Extract the tweet ID from the URL
+
+    try {
+      const response = await fetch(`/api/tweet/${tweetId}`); // Fetch from the custom API route
+      const data = await response.json();
+
+      if (data.data) {
+        // Set the tweet content
+        setTweetContent(data.data.text); // Access the tweet content from the response
+        // Set sample scores (replace with real analysis logic)
+        setScores({ positive: 47.7, neutral: 22.87, negative: 29.43 });
+        setReasoning(
+          "The tweet expresses positive sentiment about the new feature and shows excitement from users."
+        );
+      } else {
+        setTweetContent("Error fetching tweet content.");
+      }
+    } catch (error) {
+      console.error("Error fetching tweet content:", error);
+      setTweetContent("Error fetching tweet content.");
+    }
+  };
+
   const handleTweetSubmit = (url: string) => {
     setTweetUrl(url);
-    setTweetContent("This is an example tweet.");
-    setScores({ positive: 47.7, neutral: 22.87, negative: 29.43 });
-    setReasoning(
-      "The tweet expresses positive sentiment about the new feature and shows excitement from users."
-    );
+    fetchTweetContent(url); // Fetch and set the tweet content
   };
 
   return (
     <div className="relative py-10 lg:py-20 max-w-7xl mx-auto font-sans px-4 md:px-8">
-      <div className="text-center mb-12">
+      <div className="text-center mb-12 mt-10">
         <h4 className="text-3xl lg:text-5xl leading-tight tracking-tight font-semibold text-neutral-900">
           Analyze Tweets with Our AI
         </h4>

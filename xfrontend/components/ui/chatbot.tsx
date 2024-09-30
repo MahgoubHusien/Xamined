@@ -13,7 +13,7 @@ const Chatbot: React.FC = () => {
   const [input, setInput] = useState('');
   const chatEndRef = useRef<HTMLDivElement>(null);
 
-  const API_URL = process.env.FLASK_API_URL;
+  const API_URL = process.env.NEXT_PUBLIC_FLASK_API_URL;
 
   const handleSend = () => {
     if (input.trim()) {
@@ -21,8 +21,8 @@ const Chatbot: React.FC = () => {
       setMessages([...messages, { text: userInput, sender: 'user' }]);
       setInput('');
 
-      // Send the user's message to the Flask backend
-      fetch(`{API_URL}/chat`, {
+      // Send the user's message to the backend
+      fetch(`${API_URL}/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ prompt: userInput }),

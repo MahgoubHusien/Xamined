@@ -1,27 +1,33 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from transformers import AutoModelForSequenceClassification, AutoTokenizer, AutoConfig
+from transformers import AutoModelForSequenceClassification, AutoTokenizer, AutoConfig, pipeline
 import openai
 import numpy as np
 from scipy.special import softmax
 import os
 from dotenv import load_dotenv
 
+# Load environment variables
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app)  
+CORS(app)
 
+# OpenAI API key
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 OPENAI_MODEL = os.getenv('OPENAI_MODEL')
-MODEL_NAME = os.getenv('MODEL_NAME')
 openai.api_key = OPENAI_API_KEY
 
+# Sentiment Analysis Model
+MODEL_NAME = "cardiffnlp/twitter-roberta-base-sentiment-latest"
+
+# Load the tokenizer, config, and model
 tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
 config = AutoConfig.from_pretrained(MODEL_NAME)
 model = AutoModelForSequenceClassification.from_pretrained(MODEL_NAME)
 
-from openai.error import OpenAIError
+# Sentiment pipeline
+sentiment_task = pipeline("sentiment-analysis", model=model, tokenizer=tokenizer)
 
 # Preprocessing function to replace usernames and links
 def preprocess(text):
@@ -35,21 +41,7 @@ def preprocess(text):
 # Sentiment Analysis Function
 def analyze_sentiment(text):
     text = preprocess(text)
-    encoded_input = tokenizer(text, return_tensors='pt')
-    output = model(**encoded_input)
-    scores = output.logits[0].detach().numpy()
-    scores = softmax(scores)
-    ranking = np.argsort(scores)[::-1]
-
-    results = []
-    for i in range(scores.shape[0]):
-        label = config.id2label[ranking[i]]
-        score = scores[ranking[i]]
-        results.append({
-            "rank": i + 1,
-            "label": label,
-            "score": np.round(float(score), 4)
-        })
+    results = sentiment_task(text)  # Use the pipeline for inference
     return results
 
 # Chat Function using OpenAI's ChatGPT
@@ -65,11 +57,9 @@ def chat_with_openai(prompt):
         )
         assistant_response = response['choices'][0]['message']['content'].strip()
         return assistant_response
-    except OpenAIError as e:
-        # Handle OpenAI API errors
+    except openai.OpenAIError as e:
         return f"An error occurred: {str(e)}"
     except Exception as e:
-        # Handle other exceptions
         return f"An unexpected error occurred: {str(e)}"
 
 # API Endpoint for Sentiment Analysis
