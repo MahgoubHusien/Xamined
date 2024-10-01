@@ -1,5 +1,4 @@
-"use client";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { RatingWithReasoning } from "@/components/ui/RatingWithReasoning";
 import { TweetDemo } from "@/components/ui/tweet";
 import Chatbot from "@/components/ui/chatbot";
@@ -7,40 +6,35 @@ import Chatbot from "@/components/ui/chatbot";
 const FeaturesPage = () => {
   const [tweetContent, setTweetContent] = useState("");
   const [tweetUrl, setTweetUrl] = useState<string | null>(null);
-  const [scores, setScores] = useState<{ positive: number; neutral: number; negative: number }>({
-    positive: 0,
-    neutral: 0,
-    negative: 0,
-  });
-  const [reasoning, setReasoning] = useState("");
+  const [loading, setLoading] = useState<boolean>(false);
 
   const fetchTweetContent = async (url: string) => {
-    const tweetId = url.split("/").pop(); // Extract the tweet ID from the URL
+    const tweetId = url.split("/").pop();
 
     try {
-      const response = await fetch(`/api/tweet/${tweetId}`); // Fetch from the custom API route
-      const data = await response.json();
+      setLoading(true);
+      const response = await fetch(`/api/tweet/${tweetId}`);
+      if (response.ok) {
+        const data = await response.json();
 
-      if (data.data) {
-        // Set the tweet content
-        setTweetContent(data.data.text); // Access the tweet content from the response
-        // Set sample scores (replace with real analysis logic)
-        setScores({ positive: 47.7, neutral: 22.87, negative: 29.43 });
-        setReasoning(
-          "The tweet expresses positive sentiment about the new feature and shows excitement from users."
-        );
+        if (data && data.tweet && data.tweet.text) {
+          setTweetContent(data.tweet.text);
+        } else {
+          setTweetContent("");
+        }
       } else {
-        setTweetContent("Error fetching tweet content.");
+        setTweetContent("");
       }
     } catch (error) {
-      console.error("Error fetching tweet content:", error);
-      setTweetContent("Error fetching tweet content.");
+      setTweetContent("");
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleTweetSubmit = (url: string) => {
     setTweetUrl(url);
-    fetchTweetContent(url); // Fetch and set the tweet content
+    fetchTweetContent(url);
   };
 
   return (
@@ -54,27 +48,32 @@ const FeaturesPage = () => {
         </p>
       </div>
 
-      <div className="flex flex-col md:flex-row justify-center items-center gap-8 md:gap-6">
-        <FeatureContainer title="Tweet URL" description="Analyze sentiment of the tweet">
-          <TwitterSubmission onTweetSubmit={handleTweetSubmit} />
-        </FeatureContainer>
+      {loading ? (
+        <div className="text-center">
+          <p className="text-lg font-semibold text-neutral-600">Loading, please wait...</p>
+        </div>
+      ) : (
+        <div className="flex flex-col md:flex-row justify-center items-center gap-8 md:gap-6">
+          <FeatureContainer title="Tweet URL" description="Analyze sentiment of the tweet">
+            {tweetUrl ? (
+              <div className="w-full">
+                <p className="text-center text-neutral-700 -mt-3">Submitted Tweet:</p>
+                <div className="rounded-lg -mt-3">
+                  <TweetDemo tweetUrl={tweetUrl} />
+                </div>
+              </div>
+            ) : (
+              <TwitterSubmission onTweetSubmit={handleTweetSubmit} />
+            )}
+          </FeatureContainer>
 
-        <FeatureContainer title="Sentiment Analysis" description="Get detailed tweet sentiment">
-          <RatingWithReasoning
-            tweetContent={tweetContent}
-            scores={scores}
-            reasoning={reasoning}
-          />
-        </FeatureContainer>
+          <FeatureContainer title="Sentiment Analysis" description="Get detailed tweet sentiment">
+            <RatingWithReasoning tweetContent={tweetContent} />
+          </FeatureContainer>
 
-        <FeatureContainer title="Chat with the Bot" description="Discuss the tweet with AI">
-          <Chatbot />
-        </FeatureContainer>
-      </div>
-
-      {tweetUrl && (
-        <div className="mt-8 p-4 bg-gray-100 rounded-lg shadow-md">
-          <TweetDemo tweetUrl={tweetUrl} />
+          <FeatureContainer title="Chat with the Bot" description="Discuss the tweet with AI">
+            <Chatbot />
+          </FeatureContainer>
         </div>
       )}
     </div>
@@ -112,6 +111,12 @@ const TwitterSubmission = ({ onTweetSubmit }: { onTweetSubmit: (url: string) => 
     }
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleSubmit();
+    }
+  };
+
   return (
     <div className="flex flex-col items-center gap-4 mt-4 w-full">
       <input
@@ -119,6 +124,7 @@ const TwitterSubmission = ({ onTweetSubmit }: { onTweetSubmit: (url: string) => 
         placeholder="Enter tweet URL"
         value={tweet}
         onChange={(e) => setTweet(e.target.value)}
+        onKeyDown={handleKeyDown}
         className="w-full p-3 border border-neutral-300 rounded-md bg-white text-neutral-900 placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg"
       />
       <button

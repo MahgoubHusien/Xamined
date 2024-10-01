@@ -33,7 +33,7 @@ export default function LandingPage() {
             <p className="text-base md:text-lg max-w-lg md:max-w-2xl text-gray-600">
               Dive into real-time analysis of the latest trends and opinions.
               Explore how public sentiment shapes the world, and let us guide you
-              through the data that matters. 
+              through the data that matters.
             </p>
             <Link href="/tweet-analyzer">
               <CoolButton 
@@ -46,11 +46,11 @@ export default function LandingPage() {
           </div>
 
           {/* Content Section */}
-          <div className="flex justify-center items-center w-full -mt-20">
+          <div className="flex justify-center items-center w-full -mt-16">
             <div className="flex flex-col md:flex-row w-full max-w-4xl items-center justify-center gap-6 md:gap-8">
               {/* Rating and Reasoning Section */}
-              <div className="w-full md:w-1/2 flex justify-center md:justify-end order-2 md:order-1">
-                <div className="max-w-xs md:max-w-md">
+              <div className="w-full md:w-[45%] flex justify-center md:justify-end order-2 md:order-1">
+                <div className="max-w-[280px] md:max-w-[320px] h-full flex items-center">
                   <RatingWithReasoning
                     tweetContent={tweetContent}
                     scores={scores}
@@ -58,10 +58,13 @@ export default function LandingPage() {
                   />
                 </div>
               </div>
+
               {/* Tweet Demo Section */}
-              <div className="w-full md:w-1/2 flex justify-center md:justify-start mb-8 md:mb-0 order-1 md:order-2">
-                <div className="scale-90 h-[550px] md:scale-100 max-w-xs md:max-w-none mx-auto md:mx-0">
-                  <TweetDemo tweetUrl={"1836824626971955537"} />
+              <div className="w-full md:w-[45%] flex justify-center md:justify-start mb-8 md:mb-0 order-1 md:order-2">
+                <div className="h-full flex items-center">
+                  <div className="scale-90 h-[320px] md:h-[320px] max-w-xs md:max-w-md mx-auto md:mx-0">
+                    <TweetDemo tweetUrl={"1836824626971955537"} />
+                  </div>
                 </div>
               </div>
             </div>

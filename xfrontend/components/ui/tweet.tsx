@@ -6,7 +6,7 @@ interface TweetDemoProps {
 }
 
 const TweetCard = ({ id }: { id: string }) => (
-  <div className="transform scale-60 mx-auto">
+  <div className="w-full max-w-full h-full">
     <Tweet id={id} />
   </div>
 );
@@ -15,7 +15,7 @@ export const TweetDemo: React.FC<TweetDemoProps> = ({ tweetUrl }) => {
   const tweetId = tweetUrl.split("/").pop() || ""; 
 
   return (
-    <div className="relative flex w-full max-w-md">
+    <div className="relative w-full max-w-full h-full flex justify-center">
       <TweetCard id={tweetId} />
     </div>
   );
