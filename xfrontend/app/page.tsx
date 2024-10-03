@@ -17,20 +17,20 @@ export default function LandingPage() {
   return (
     <Layout>
       <div className="flex flex-col w-full min-h-screen items-center justify-center p-4 md:px-8">
-        {/* Adding margin to move the content down */}
+        {/* Content Wrapper */}
         <div className="mt-14 md:mt-20 w-full">
           {/* Header Section */}
           <div className="flex flex-col items-center text-center mb-10 md:mb-14">
-            <div className="text-4xl md:text-5xl font-bold text-black mb-4 md:mb-6">
+            <div className="text-4xl md:text-5xl font-bold text-black dark:text-white mb-4 md:mb-6">
               Xamine{" "}
               <FlipWords
                 words={words}
                 duration={3000}
-                className="text-4xl md:text-5xl font-extrabold text-black inline-block"
+                className="text-4xl md:text-5xl font-extrabold text-twitter dark:text-twitter-light inline-block"
               />
               From Tweets In Real-Time!
             </div>
-            <p className="text-base md:text-lg max-w-lg md:max-w-2xl text-gray-600">
+            <p className="text-base md:text-lg max-w-lg md:max-w-2xl text-gray-600 dark:text-gray-300">
               Dive into real-time analysis of the latest trends and opinions.
               Explore how public sentiment shapes the world, and let us guide you
               through the data that matters.

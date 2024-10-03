@@ -11,10 +11,10 @@ import {
     TweetInReplyTo,
     type TwitterComponents,
   } from 'react-tweet';
-  import { type Tweet as TweetType } from 'react-tweet/api'; // Import and rename the type
+  import { type Tweet as TweetType } from 'react-tweet/api';
   
   type Props = {
-    tweet: TweetType; // Use the renamed type here
+    tweet: TweetType;
     components?: TwitterComponents;
   };
   
