@@ -6,3 +6,4 @@ sentiment-analysis/.env
 
 # Ignore history directory
 .history/
+xamined/src/main/resources/application.properties
