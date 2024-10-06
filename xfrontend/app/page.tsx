@@ -53,8 +53,6 @@ export default function LandingPage() {
                 <div className="max-w-[280px] md:max-w-[320px] h-full flex items-center">
                   <RatingWithReasoning
                     tweetContent={tweetContent}
-                    scores={scores}
-                    reasoning={reasoning}
                   />
                 </div>
               </div>

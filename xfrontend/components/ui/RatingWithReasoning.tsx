@@ -1,84 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 
 interface RatingWithReasoningProps {
-  tweetContent: string;
+  scores?: {
+    positive: number;
+    neutral: number;
+    negative: number;
+  };
+  reasoning: string;
 }
 
-export const RatingWithReasoning: React.FC<RatingWithReasoningProps> = ({ tweetContent }) => {
-  const [scores, setScores] = useState<{ positive: number; neutral: number; negative: number }>({
-    positive: 0,
-    neutral: 0,
-    negative: 0,
-  });
-  const [reasoning, setReasoning] = useState<string>('');
-  const [loading, setLoading] = useState<boolean>(true);
-  const API_URL = process.env.NEXT_PUBLIC_FLASK_API_URL;
-
-  useEffect(() => {
-    if (!tweetContent) {
-      setReasoning("Please insert a tweet for rating.");
-      setScores({ positive: 0, neutral: 0, negative: 0 });
-      setLoading(false);
-      return;
-    }
-
-    const fetchSentimentAnalysis = async () => {
-      try {
-        const sentimentResponse = await fetch(`${API_URL}/analyze`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text: tweetContent }),
-        });
-
-        if (!sentimentResponse.ok) {
-          throw new Error(`Error fetching sentiment analysis: ${sentimentResponse.status}`);
-        }
-
-        const sentimentData = await sentimentResponse.json();
-        const positiveScore = sentimentData.Positive * 100 || 0;
-        const neutralScore = sentimentData.Neutral * 100 || 0;
-        const negativeScore = sentimentData.Negative * 100 || 0;
-
-        setScores({
-          positive: positiveScore,
-          neutral: neutralScore,
-          negative: negativeScore,
-        });
-
-        const prompt = `
-          The tweet is: "${tweetContent}".
-          The sentiment analysis results are: Positive: ${positiveScore.toFixed(2)}%, Neutral: ${neutralScore.toFixed(2)}%, Negative: ${negativeScore.toFixed(2)}%.
-          Explain why the sentiment is the way it is. Check if there is any sarcasm or slang that could affect the analysis. Please just use regular font and do not bolden any words.
-        `;
-
-        const chatGPTResponse = await fetch(`${API_URL}/chat`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ prompt }),
-        });
-
-        if (!chatGPTResponse.ok) {
-          throw new Error(`Error fetching ChatGPT reasoning: ${chatGPTResponse.status}`);
-        }
-
-        const chatGPTData = await chatGPTResponse.json();
-        setReasoning(chatGPTData.response);
-      } catch (error) {
-        setReasoning('Error fetching sentiment analysis or reasoning.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchSentimentAnalysis();
-  }, [tweetContent]);
-
+export const RatingWithReasoning: React.FC<RatingWithReasoningProps> = ({ scores = { positive: 0, neutral: 0, negative: 0 }, reasoning }) => {
   const totalScore = scores.positive + scores.neutral + scores.negative;
 
   return (
     <div className="flex flex-col items-center justify-center bg-white dark:bg-[#15202B] dark:text-[#E1E8ED] rounded-lg shadow-md p-6 w-full h-full max-w-md text-black border border-gray-300 dark:border-[#38444D]">
-      {loading ? (
-        <p>Loading...</p>
+      {totalScore === 0 ? (
+        <p>No sentiment data available</p>
       ) : (
         <>
           {/* Sentiment Overview Section */}
